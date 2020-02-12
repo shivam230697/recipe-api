@@ -30,3 +30,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=True)
     obj = UserManager()
     USERNAME_FIELD = 'email'
+
+    def get_short_name(self):
+        return self.email
+
+    def get_full_name(self):
+        return self.name
