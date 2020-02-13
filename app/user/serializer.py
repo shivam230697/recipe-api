@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import ugettext_lazy as _
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -11,6 +11,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validate_data):
         return get_user_model().obj.create_user(**validate_data)
+
+    def update(self, instance,  validated_data):
+        password = validated_data.pop('password', None)
+        user = super().update(instance, validated_data)
+        if password:
+            user.set_password(password)
+            user.save()
+        return user
 
 
 class AuthTokenSerializer(serializers.Serializer):
@@ -30,7 +38,7 @@ class AuthTokenSerializer(serializers.Serializer):
             password=password
         )
         if not user:
-            msg = ("unable to auhenticate ")
+            msg = _("unable to authenticate ")
             raise serializers.ValidationError(msg, code='authentication')
         attrs['user'] = user
         return attrs
