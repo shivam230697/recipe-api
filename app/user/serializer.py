@@ -4,12 +4,18 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """serializer for user object"""
     class Meta:
         model = get_user_model()
         fields = ('email', 'password', 'name')
+        """extra kwargs allows you to do is just set some extra restrictions 
+            or arguments for the fields that we reference 
+            in our fields variable here."""
         extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
 
     def create(self, validate_data):
+        """create a new user with encrypted password and return it."""
+        print(validate_data)
         return get_user_model().obj.create_user(**validate_data)
 
     def update(self, instance,  validated_data):
